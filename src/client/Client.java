@@ -18,41 +18,24 @@ public class Client {
 	private Scanner input = new Scanner(System.in);
 	private ObjectInputStream ois = null;
 	private ArrayList<MenuObject> list = new ArrayList<>();
+
 	Client(Socket c) throws Exception {
 		this.withServer = c;
 		streamSet();
 		receive();
 		send();
 	}
-
+	private String signal = "";
 	private void send() {
 		new Thread(new Runnable() { // 참조 변수가 없는 객체: 익명의 객체
 			@Override
 			public void run() {
 				try {
 					while (true) {
-						String msg = input.nextLine();
+						signal = input.nextLine();
 						sendMsg = withServer.getOutputStream();
-						sendMsg.write(msg.getBytes());
-//						if (msg.equals("/menu")) {
-//					
-//							try {
-//								System.out.println("객체 받을 준비 중..");
-//								reMsg = withServer.getInputStream();
-//								ois = new ObjectInputStream(reMsg);
-//								MenuObject mo = (MenuObject) ois.readObject();
-//								list.add(mo);
-//								System.out.println(list);
-//								System.out.println("받았나?");
-//								System.out.println(mo.getItems());
-//								System.out.println("받기 완료");
-//							} catch (ClassNotFoundException e) {
-//								// TODO Auto-generated catch block
-//								e.printStackTrace();
-//							}
-//						}
-							//ArrayList<MenuObject> list = new ArrayList<>();
-							
+						sendMsg.write(signal.getBytes());
+						
 					}
 				} catch (IOException e) {
 					System.out.println("메세지를 주고 받을 수 없습니다.");
@@ -68,8 +51,23 @@ public class Client {
 			public void run() {
 				try {
 					while (true) {
-						
-						
+						if (signal.equals("end")) { // 객체를 받는 함수를 따로 만들어주자!
+							while (true) {
+								System.out.println("객체 받을 준비 중..");
+								reMsg = withServer.getInputStream();
+								ois = new ObjectInputStream(reMsg);
+								MenuObject mo = (MenuObject) ois.readObject();
+								list.add(mo);
+								System.out.println(list);
+								System.out.println("받았나?");
+								System.out.println(mo.getItems());
+								System.out.println("받기 완료");
+								if (mo.getEndWord().equals("end")) {
+									signal = "";
+									break;
+								}
+							}
+						}
 						reMsg = withServer.getInputStream();
 						byte[] reBuffer = new byte[100];
 						reMsg.read(reBuffer);

@@ -1,10 +1,7 @@
 package server;
 
-
-
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
 
 import object.MenuObject;
 
@@ -115,11 +112,11 @@ public class ServerCenter {
 		}
 	}
 
-	private String cutMsg(String msg) {
-		msg.substring(msg.indexOf(" ") + 1, msg.length());
-		System.out.println();
-		return null;
-	}
+//	private String cutMsg(String msg) {
+//		msg.substring(msg.indexOf(" ") + 1, msg.length());
+//		System.out.println();
+//		return null;
+//	}
 
 	private void settle(Server whoServer) throws Exception {
 		System.out.println("settle()이 실행 중");
@@ -161,29 +158,35 @@ public class ServerCenter {
 		return null;
 	}
 
-//private ObjectOutputStream obOut= null;
+//private ObjectOutputStream obOut = null;
 	private void showMenu(Server whoServer) {
 
 		try {
 			for (MenuObject mo : menuList) {
 				System.out.println(mo.getItems());
 			}
-			
+
 			System.out.println("메뉴 객체 보내주기");
-			
-			
+
 			for (MenuObject mo : menuList) {
-				ObjectOutputStream obOut = new ObjectOutputStream(whoServer.getSocket().getOutputStream()); // 새로 열어주지 않으면 한 번만 전송 되고, 클라이언트가 한 번 받고 더는 못 받음
-				// 하나 보낼 때마다 새로 객체 생성해줘야 함 
-				if(mo != null) {
+				menuList.get(menuList.size() - 1).setEndWord("end");
+				ObjectOutputStream obOut = new ObjectOutputStream(whoServer.getSocket().getOutputStream()); // 새로 열어주지
+																											// 않으면 한 번만
+																											// 전송 되고,
+																											// 클라이언트가 한
+																											// 번 받고 더는 못
+																											// 받음
+				// 하나 보낼 때마다 새로 객체 생성해줘야 함
+				if (mo != null) {
 					System.out.println(mo);
+
 					obOut.writeObject(mo);
-					//obOut.flush();
+					// obOut.flush();
 					Thread.sleep(3000);
 					System.out.println("object 변환/보내기 완료");
 				}
 			}
-			
+
 //			for (MenuObject menu : menuList) {
 //				whoServer.send("[Server] " + menu.getItems() + "/" + menu.getCoast());
 //				Thread.sleep(1);
